@@ -1,0 +1,32 @@
+{
+  "hash": "6c4f86e3",
+  "browserHash": "7737c51e",
+  "optimized": {
+    "monday-sdk-js": {
+      "src": "../../node_modules/monday-sdk-js/src/index.js",
+      "file": "monday-sdk-js.js",
+      "fileHash": "9a21047a",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "ff61f3ff",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "a1f9676a",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-BHRT4LQR": {
+      "file": "chunk-BHRT4LQR.js"
+    },
+    "chunk-RSJERJUL": {
+      "file": "chunk-RSJERJUL.js"
+    }
+  }
+}
