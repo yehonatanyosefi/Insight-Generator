@@ -17,8 +17,8 @@ export default function RootWrapper({ onChat }: { onChat: Function }) {
         const oldSearchText = searchText;
         setChatHistory((prev) => [...prev, { Human: oldSearchText }]);
         setSearchText("");
-        // const res = await onChat(oldSearchText);
-        // setChatHistory((prev) => [...prev, { AI: res }]);
+        const res = await onChat(oldSearchText);
+        setChatHistory((prev) => [...prev, { AI: res }]);
     };
 
     return (
@@ -28,18 +28,18 @@ export default function RootWrapper({ onChat }: { onChat: Function }) {
 
             {/* Top chat items */}
             <div className="overflow-y-scroll h-72 no-scrollbar">
-                {chatHistory.map((item: any) => {
-                    console.log(item.Human, item.AI)
-                    if (item.Human) {
+                {chatHistory.map((msg: any) => {
+                    console.log(msg.Human, msg.AI)
+                    if (msg.Human) {
                         return (
                             <div className="flex justify-end" key={uid()}>
-                                <QuestionBubble text={item.Human.text as any} key={uid()}/>
+                                <QuestionBubble text={msg.Human as any} key={uid()}/>
                             </div>
                         );
                     } else {
                         return (
                             <div className="flex justify-start" key={uid()}>
-                                <ResponseBubble text={item.AI.text as any} key={uid()}/>
+                                <ResponseBubble text={msg.AI as any} key={uid()}/>
                             </div>
                         );
                     }

@@ -2,6 +2,7 @@ import React from "react";
 import Box from "monday-ui-react-core/dist/Box";
 
 export default function QuestionBubble( {text} : {text: string} ) {
+    console.log("file: QuestionBubble.tsx: QuestionBubble: text", text)
     return (
         <div className="ml-10 m-2">
             <Box className="bg-cyan-500 text-white" // Not Monday Background Colors
