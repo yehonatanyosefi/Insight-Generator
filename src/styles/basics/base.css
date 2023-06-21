@@ -1,0 +1,56 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--primary-background-color);
+  font-size: 14px;
+  font-family: figtree-normal, sans-serif;
+}
+
+pre {
+  font-family: figtree-normal, sans-serif !important;
+}
+
+hr {
+  margin: 0;
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--layout-border-color);
+}
+
+input::placeholder {
+  color: var(--placeholder-color);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.chat-section {
+    height: 20rem;
+}
+
+.answer, .question {
+    line-height: 25px;
+    box-shadow: var(--box-shadow-small);
+    padding: 5px 15px;
+    margin: 10px;
+
+}
+
+.answer {
+    background-color: var(--steel-selected);
+}
+
+.answer .answer-text {
+  max-height: 80%;
+  max-width: 300px;
+  white-space: wrap;
+}
+
+.question {
+    
+    background-color: #edf3f9;
+
+}

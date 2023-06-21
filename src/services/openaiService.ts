@@ -1,10 +1,10 @@
 import axios from 'axios'
 
-export async function postBoardData(boardData: any, userId: number, boardId: number) {
+export async function postBoardData(boardData: any, boardId: number) {
    console.log("file: openaiService.ts:4 -> getInsightsData -> boardData:", boardData)
    try {
 
-    await axios.post('http://localhost:3030/ai/uploadBoard', {boardData, userId, boardId})
+    await axios.post('http://localhost:3030/ai/uploadBoard', {boardData, boardId})
     
 
    } catch(err) {
@@ -14,10 +14,11 @@ export async function postBoardData(boardData: any, userId: number, boardId: num
 }
 
 
-export async function postPrompt(textField: string) {
+export async function postPrompt(textField: string, sessionData: {boardId: number | null, chatHistory: ChatHistory[]}) {
+   console.log('file: openaiService.ts:18 -> sessionData:', sessionData)
    try {
       
-      const res = await axios.post('http://localhost:3030/ai/prompt', {prompt: textField})
+      const res = await axios.post('http://localhost:3030/ai/prompt', {prompt: textField, sessionData})
       console.log("file: openaiService.ts:21 -> postPrompt -> res:", res.data)
       return res.data
 

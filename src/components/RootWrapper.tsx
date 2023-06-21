@@ -1,53 +1,61 @@
 import { useEffect, useState } from "react";
 import TextField from "monday-ui-react-core/dist/TextField";
 import Button from "monday-ui-react-core/dist/Button";
-import Loader from "monday-ui-react-core/dist/Loader";
-import StoryDescription from "monday-ui-react-core/dist/StoryDescription";
+// import Loader from "monday-ui-react-core/dist/Loader";
+// import StoryDescription from "monday-ui-react-core/dist/StoryDescription";
 import QuestionBubble from "./QuestionBubble";
-import ResponseTyping from "./ResponseTyping";
+// import ResponseTyping from "./ResponseTyping";
 import ResponseBubble from "./ResponseBubble";
-import BoardLoaderPlaceholder from "./BoardLoaderPlaceholder";
-import { v4 as uid } from 'uuid';
+// import BoardLoaderPlaceholder from "./BoardLoaderPlaceholder";
+import { v4 as uuid } from 'uuid';
 
-export default function RootWrapper({ onChat }: { onChat: Function }) {
+export default function RootWrapper({ onChat }: { onChat: (arg0: string, arg1: ChatHistory[]) => Promise<string> }) {
     const [searchText, setSearchText] = useState("");
-    const [chatHistory, setChatHistory] = useState<any[]>([]);
-    const handlePromptSend = async (e: any) => {
+
+
+
+    const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
+
+
+    const handlePromptSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const oldSearchText = searchText;
         setChatHistory((prev) => [...prev, { Human: oldSearchText }]);
         setSearchText("");
-        const res = await onChat(oldSearchText);
-        setChatHistory((prev) => [...prev, { AI: res }]);
     };
+
+    useEffect(() => {
+        (chatHistory.length && Object.keys(chatHistory[chatHistory.length - 1])[0] === "Human") && onSetChat(searchText)
+    }, [chatHistory])
+
+
+    const onSetChat = async(searchText: string) => {
+        const answer: string = await onChat(searchText, chatHistory);
+        setChatHistory((prev) => [...prev, { AI: answer }]);
+    }
 
     return (
         <div>
-            {/* This component should be shown when the board is fetching. only this component and nothing else */}
-            {/* <BoardLoaderPlaceholder/> */}
-
-            {/* Top chat items */}
-            <div className="overflow-y-scroll h-72 no-scrollbar">
-                {chatHistory.map((msg: any) => {
-                    console.log(msg.Human, msg.AI)
+            <section className="overflow-y-scroll chat-section">
+                {chatHistory.map((msg) => {
                     if (msg.Human) {
                         return (
-                            <div className="flex justify-end" key={uid()}>
-                                <QuestionBubble text={msg.Human as any} key={uid()}/>
+                            <div className="flex justify-end" key={uuid()}>
+                                <QuestionBubble text={msg.Human as string} key={uuid()}/>
                             </div>
-                        );
+                        )
                     } else {
                         return (
-                            <div className="flex justify-start" key={uid()}>
-                                <ResponseBubble text={msg.AI as any} key={uid()}/>
+                            <div className="flex justify-start" key={uuid()}>
+                                <ResponseBubble text={msg.AI as string} key={uuid()}/>
                             </div>
                         );
                     }
                 })}
-            </div>
+            </section>
 
             {/* Bottom chat send items */}
-            <div className="fixed bottom-0 inset-x-0">
+            <section className="fixed bottom-0 inset-x-0">
                 <form className="flex m-3 space-x-4" onSubmit={handlePromptSend}>
                     <TextField
                         className="w-3/4"
@@ -58,7 +66,7 @@ export default function RootWrapper({ onChat }: { onChat: Function }) {
                     />
                     <Button type="submit">Chat</Button>
                 </form>
-            </div>
+            </section>
         </div>
     );
 }
