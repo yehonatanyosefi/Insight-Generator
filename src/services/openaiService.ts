@@ -17,7 +17,8 @@ export async function postBoardData(boardData: any, userId: number, boardId: num
 export async function postPrompt(textField: string) {
    try {
       
-      const res = await axios.post('http://localhost:3030/ai/prompt', {textField})
+      const res = await axios.post('http://localhost:3030/ai/prompt', {prompt: textField})
+      console.log("file: openaiService.ts:21 -> postPrompt -> res:", res.data)
       return res.data
 
    } catch(err) {

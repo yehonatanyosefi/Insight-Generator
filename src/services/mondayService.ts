@@ -31,15 +31,15 @@ export const getBoardData = async (boardId: number, mondaySdk: any) => {
 
     const mappedBoardData = res.data.boards.map((board: any) => {
       return {
-        name: board.name,
+        board_name: board.name,
         groups: board.groups.map((group: any) => {
           return {
-            title: group.title,
+            group_title: group.title,
             items: board.items
               .filter((item: any) => item.group.id === group.id)
               .map((item: any) => {
                 return {
-                  name: item.name,
+                  item_name: item.name,
                   column_values: item.column_values.filter(
                     (colVal: any) =>
                       colVal.type === "status" ||
@@ -50,7 +50,13 @@ export const getBoardData = async (boardId: number, mondaySdk: any) => {
                       colVal.type === 'multiple-person' ||
                       colVal.type === 'person' ||
                       colVal.type === 'date'
-                  ),
+                  ).map((colVal: any) => {
+                    return {
+                        column_title: colVal.title,
+                        column_type: colVal.type,
+                        column_value: colVal.text
+                    }
+                  }),
                 };
               }),
           };
@@ -75,7 +81,7 @@ export const getBoardData = async (boardId: number, mondaySdk: any) => {
     // })
 
     console.log("file: mondayService.ts:11 -> getBoardData -> res:", res);
-    return mappedBoardData;
+    return mappedBoardData[0];
   } catch (err) {
     console.log("file: mondayService.ts:5 -> getBoardData -> err:", err);
   }
