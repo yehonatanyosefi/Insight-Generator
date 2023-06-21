@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import mondaySdk from "monday-sdk-js";
 import "monday-ui-react-core/dist/main.css";
 import { getBoardData } from "./services/mondayService";
+import "monday-ui-react-core/tokens";
 import Button from 'monday-ui-react-core/dist/Button'
 import { getInsightsData } from "./services/openaiService";
+import RootWrapper from "./components/RootWrapper";
 const monday = mondaySdk();
 
 function App() {
@@ -41,11 +43,12 @@ function App() {
     setInsights(insights)
   }
 
-  if (!boardData) return <>Loading</>;
+  // if (!boardData) return <>Loading</>;
   return (
     <main>
-        <Button onClick={() => onGenerateInsights(boardData)}>Generate</Button>
-        {insights && <pre>{JSON.stringify(insights, null, 2)}</pre>}
+        {/* <Button onClick={() => onGenerateInsights(boardData)}>Generate</Button>
+        {insights && <pre>{JSON.stringify(insights, null, 2)}</pre>} */}
+        <RootWrapper/>
     </main>
   );
 }
