@@ -53,7 +53,7 @@ function App() {
      setGPTAnswer(answer)
   }
 
-  if (!boardData) return <>Loading</>;
+  // if (!boardData) return <>Loading</>;
   return (
     <main>
         {/* <Button onClick={() => onGenerateInsights(boardData)}>Generate</Button>

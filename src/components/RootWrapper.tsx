@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextField from "monday-ui-react-core/dist/TextField";
 import Button from "monday-ui-react-core/dist/Button";
 import Loader from "monday-ui-react-core/dist/Loader";
@@ -6,21 +6,16 @@ import StoryDescription from "monday-ui-react-core/dist/StoryDescription";
 import QuestionBubble from "./QuestionBubble";
 import ResponceTyping from "./ResponceTyping";
 import ResponceBubble from "./ResponceBubble";
+import BoardLoaderPlaceholder from "./BoardLoaderPlaceholder";
 
-export default function RootWrapper({onChat}: {onChat: Function}) {
-
-    const [searchText, setSeachText] = useState('')
-
-    
+export default function RootWrapper({ onChat }: { onChat: Function }) {
+    const [searchText, setSeachText] = useState("");
 
     return (
         <div>
-            {/* Awaiting board Read */}
-            {/* <StoryDescription description="L" vertical align={Flex.align.MEDIUM}>
-                <div className="monday-storybook-loader_size-variants_container">
-                    <Loader size={Loader.sizes.LARGE} />
-                </div>
-            </StoryDescription> */}
+            
+            {/* This component should be shown when the board is fetching. only this component and nothing else */}
+            {/* <BoardLoaderPlaceholder/> */}
 
             {/* Top chat items */}
             <div className="overflow-y-scroll h-72 no-scrollbar">
