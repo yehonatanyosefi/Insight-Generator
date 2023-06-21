@@ -46,6 +46,7 @@ function App() {
     <main>
         <Button onClick={() => onGenerateInsights(boardData)}>Generate</Button>
         {insights && <pre>{JSON.stringify(insights, null, 2)}</pre>}
+        {boardData && <pre>{JSON.stringify(boardData, null, 2)}</pre>}
     </main>
   );
 }
