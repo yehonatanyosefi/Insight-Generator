@@ -1,5 +1,4 @@
-import React from "react";
-// import { TextField } from "monday-ui-react-core"; // Doesnt work at all, deconstruction will result in ReferenceError: global is not defined
+import { useState } from "react";
 import TextField from "monday-ui-react-core/dist/TextField";
 import Button from "monday-ui-react-core/dist/Button";
 import Loader from "monday-ui-react-core/dist/Loader";
@@ -8,7 +7,12 @@ import QuestionBubble from "./QuestionBubble";
 import ResponceTyping from "./ResponceTyping";
 import ResponceBubble from "./ResponceBubble";
 
-export default function RootWrapper() {
+export default function RootWrapper({onChat}: {onChat: Function}) {
+
+    const [searchText, setSeachText] = useState('')
+
+    
+
     return (
         <div>
             {/* Awaiting board Read */}
@@ -46,8 +50,10 @@ export default function RootWrapper() {
                     className="w-3/4"
                     placeholder="Send a message"
                     size={TextField.sizes.MEDIUM}
+                    onChange={(e: string) => setSeachText(e)}
+                    value={searchText}
                 />
-                <Button>Chat </Button>
+                <Button onClick={() => onChat(searchText)}>Chat </Button>
             </div>
         </div>
     );
