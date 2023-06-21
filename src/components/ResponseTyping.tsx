@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Box from "monday-ui-react-core/dist/Box";
 
-export default function ResponceTyping() {
+export default function ResponseTyping() {
     const [dots, setDots] = useState("...");
 
     useEffect(() => {
