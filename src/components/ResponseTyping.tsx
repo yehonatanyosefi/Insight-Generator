@@ -21,14 +21,12 @@ export default function ResponseTyping() {
     }, []);
 
     return (
-        <div className="m-2 w-7">
             <Box
-                className="bg-slate-200 text-black" // Not Monday Background Colors
+                className="answer typing text-black" // Not Monday Background Colors
                 border={Box.borders.DEFAULT}
                 rounded={Box.roundeds.MEDIUM}
             >
                 <p className="p-1 pl-2">{dots}</p>
             </Box>
-        </div>
     );
 }

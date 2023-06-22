@@ -49,6 +49,10 @@ input::placeholder {
   white-space: wrap;
 }
 
+.answer.typing {
+  max-width: 50px;
+}
+
 .question {
     
     background-color: #edf3f9;

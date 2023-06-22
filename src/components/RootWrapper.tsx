@@ -8,6 +8,7 @@ import QuestionBubble from "./QuestionBubble";
 import ResponseBubble from "./ResponseBubble";
 // import BoardLoaderPlaceholder from "./BoardLoaderPlaceholder";
 import { v4 as uuid } from "uuid";
+import ResponseTyping from "./ResponseTyping";
 
 export default function RootWrapper({
   onChat,
@@ -47,8 +48,8 @@ export default function RootWrapper({
   return (
     <div>
       <section className="overflow-y-scroll chat-section">
-        <div className="flex justify-end" key={uuid()}>
-          <QuestionBubble
+        <div className="flex justify-start" key={uuid()}>
+          <ResponseBubble
             text={`Hi x 👋, I am your Board Assistant. Feel free to ask me anything related to the board. `}
             key={uuid()}
           />
@@ -68,7 +69,10 @@ export default function RootWrapper({
             );
           }
         })}
-        {chatHistory.length === 1 && (
+                {isLoadingAIAnswer && (
+                    <ResponseTyping />
+        )}
+        {!chatHistory.length && (
           <div className="pre-actions">
             <Button size={Button.sizes.SMALL} kind={Button.kinds.SECONDARY}>
               Show board analytics
@@ -82,13 +86,7 @@ export default function RootWrapper({
         {/* Bottom chat send items */}
       </section>
       <section className="fixed bottom-0 inset-x-0 chat-container">
-        {/* {!isLoadingAIAnswer && (
-          <div className="ai-typing-container">
-            <p className="text-gray-400 text-sm mt-48">
-              Board Assistant is typing...
-            </p>
-          </div>
-        )} */}
+
         <form className="flex m-3 space-x-4" onSubmit={handlePromptSend}>
           <TextField
             className="w-3/4"
