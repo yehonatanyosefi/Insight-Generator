@@ -8,6 +8,7 @@ import { getBoardData } from "./services/mondayService";
 import "monday-ui-react-core/tokens";
 import { postBoardData, postPrompt } from "./services/openaiService";
 import RootWrapper from "./components/RootWrapper";
+import BoardLoaderPlaceholder from "./components/BoardLoaderPlaceholder";
 const monday = mondaySdk();
 
 function App() {
@@ -53,7 +54,7 @@ function App() {
      return answer
   }
 
-  // if (!boardData) return <>Loading</>;
+  if (!boardData) return <BoardLoaderPlaceholder/>;
   return (
     <main>
         {/* <Button onClick={() => onGenerateInsights(boardData)}>Generate</Button>
