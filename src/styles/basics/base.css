@@ -33,14 +33,14 @@ input::placeholder {
 
 .answer, .question {
     line-height: 25px;
-    box-shadow: var(--box-shadow-small);
+    box-shadow: var(--box-shadow-xs);
     padding: 5px 15px;
     margin: 10px;
 
 }
 
 .answer {
-    background-color: var(--steel-selected);
+    background-color: var(--primary-selected-color);
 }
 
 .answer .answer-text {

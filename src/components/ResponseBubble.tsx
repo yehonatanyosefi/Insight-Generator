@@ -2,7 +2,6 @@ import React from "react";
 import Box from "monday-ui-react-core/dist/Box";
 
 export default function ResponseBubble({text} : {text: string}) {
-    console.log("file: ResponseBubble.tsx: ResponseBubble: text", text)
     return (
             <Box className="answer text-black" // Not Monday Background Colors
                 border={Box.borders.DEFAULT} 

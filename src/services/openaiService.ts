@@ -1,15 +1,13 @@
 import axios from "axios";
 
-
-
-export async function postData(boardData: any, boardId: number | null, conversationType: string) {
-  console.log(
-    "file: openaiService.ts:4 -> getInsightsData -> boardData:",
-    boardData
-  );
+export async function postData(
+  data: any,
+  boardId: number | null,
+  conversationType: string
+) {
   try {
     await axios.post(`http://localhost:3030/ai/upload/${conversationType}`, {
-      boardData,
+      data,
       namespace: boardId + getSuffix(conversationType),
     });
   } catch (err) {
@@ -18,9 +16,12 @@ export async function postData(boardData: any, boardId: number | null, conversat
 }
 
 function getSuffix(conversationType: string) {
-   const ACTIVITY_LOG_SUFFIX = "_activity_log";
-const BOARD_LOG_SUFFIX = "";
-
+  console.log(
+    "file: openaiService.ts:21 -> getSuffix -> conversationType:",
+    conversationType
+  );
+  const ACTIVITY_LOG_SUFFIX = "_activity_log";
+  const BOARD_LOG_SUFFIX = "";
 
   switch (conversationType) {
     case "board":
@@ -38,11 +39,13 @@ export async function postPrompt(
   chatHistory: ChatHistory[],
   conversationType: string
 ) {
+  console.log("file: openaiService.ts:46 -> textField:", textField)
   try {
     const sessionData = {
       namespace: boardId + getSuffix(conversationType),
       chatHistory,
     };
+    console.log("file: openaiService.ts:47 -> sessionData:", sessionData);
 
     const res = await axios.post(
       `http://localhost:3030/ai/prompt/${conversationType}`,

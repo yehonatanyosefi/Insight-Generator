@@ -13,15 +13,16 @@ import ResponseBubble from "./ResponseBubble";
 import { v4 as uuid } from "uuid";
 import ResponseTyping from "./ResponseTyping";
 import Activity from "monday-ui-react-core/dist/icons/Activity";
+import Board from "monday-ui-react-core/dist/icons/Board";
 // import { Menu, MenuItem, SplitButton } from "monday-ui-react-core";
 export default function RootWrapper({
   onChat,
-  onChooseActivityLogs,
+  onChooseOption,
   userName,
   conversationType,
 }: {
   onChat: (arg0: string, arg1: ChatHistory[]) => Promise<string>;
-  onChooseActivityLogs: Function;
+  onChooseOption: Function;
   userName: string | null;
   conversationType: string;
 }) {
@@ -29,25 +30,23 @@ export default function RootWrapper({
   const [isLoadingAIAnswer, setIsLoadingAIAnswer] = useState<boolean>(false);
 
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
-  console.log(
-    "file: RootWrapper.tsx:18 -> RootWrapper -> chatHistory:",
-    chatHistory
-  );
 
   const handlePromptSend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const oldSearchText = searchText;
     setChatHistory((prev) => [...prev, { Human: oldSearchText }]);
-    setSearchText("");
   };
 
   useEffect(() => {
     chatHistory.length &&
       Object.keys(chatHistory[chatHistory.length - 1])[0] === "Human" &&
       onSetChat(searchText);
+        setSearchText("");
+
   }, [chatHistory]);
 
   const onSetChat = async (searchText: string) => {
+    console.log("file: RootWrapper.tsx:48 -> onSetChat -> searchText:", searchText)
     setIsLoadingAIAnswer(true);
     const answer: string = await onChat(searchText, chatHistory);
 
@@ -59,11 +58,18 @@ export default function RootWrapper({
     return (
       <Menu size="small">
         <MenuItem
-          onClick={() => onChooseActivityLogs(setSearchText, setChatHistory)}
+          onClick={() => onChooseOption('activity',setSearchText, setChatHistory)}
           iconType="SVG"
-          iconBackgroundColor="var(--color-indigo)"
+        //   iconBackgroundColor="var(--color-indigo)"
           icon={Activity}
           title="Activity Logs"
+        />
+        <MenuItem
+          onClick={() => onChooseOption('board',setSearchText, setChatHistory)}
+          iconType="SVG"
+        //   iconBackgroundColor="var(--color-stuck-red)"
+          icon={Board}
+          title="Board Information"
         />
         {/* <MenuItem
       onClick={() => getHTMLFromBodyMessage(asyncResult => forwardEmail(asyncResult, type))}

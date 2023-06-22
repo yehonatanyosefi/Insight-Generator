@@ -114,9 +114,11 @@ export async function getActivityLogs(boardId: number | null, mondaySdk: any) {
       return {
         activity_done_at: date,
         activity_occured_on: activity.entity,
-        by_user: username
+        by_user: username,
+        event: activity.event
       }
     }))
+    console.log("file: mondayService.ts:120 -> mappedActivityLogs -> mappedActivityLogs:", mappedActivityLogs)
     return mappedActivityLogs
   } catch(err) {
     console.log("file: mondayService.ts:96 -> getActivityLogs -> err:", err)
