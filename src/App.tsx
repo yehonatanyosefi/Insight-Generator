@@ -7,7 +7,8 @@ import "monday-ui-react-core/dist/main.css";
 import {
   getActivityLogs,
   getBoardData,
-  getUserName,
+  getUpdates,
+  getUserData,
 } from "./services/mondayService";
 import "monday-ui-react-core/tokens";
 import { postData, postPrompt } from "./services/openaiService";
@@ -17,34 +18,32 @@ const monday = mondaySdk();
 
 function App() {
   const [boardId, setBoardId] = useState<null | number>(null);
-  const [userName, setUserName] = useState<null | string>(null);
+  const [userData, setUserData] = useState<any>(null);
   const [boardData, setBoardData] = useState<any>(null);
   const [conversationType, setConversationType] = useState<string>("board");
 
   useEffect(() => {
-    _getUserName(monday);
+    _getUserData(monday);
   }, []);
 
-  const _getUserName = async (monday: any) => {
-    const userName = await getUserName(monday);
+  const _getUserData = async (monday: any) => {
+    const userData = await getUserData(monday);
 
-    setUserName(userName);
+    setUserData(userData);
   };
 
-  // useEffect(() => {
-  //   boardData && onPostBoardData(boardData, boardId!)
-  // }, [boardData, boardId])
 
   useEffect(() => {
 
     if(!boardId) return
     if (conversationType === "activity") onPostActivity();
     else if (conversationType === "board" && !boardData) onPostBoardData();
+    else if (conversationType === "updates") onPostBoardUpdates();
+    // else if (conversationType === "agent") onPostBoardData();
   }, [conversationType, boardId]);
 
   useEffect(() => {
     monday.listen("context", async (res: any) => {
-      console.log("file: App.tsx:36 -> monday.listen -> res:", res);
 
       try {
         setBoardId(res.data.boardId);
@@ -56,7 +55,6 @@ function App() {
 
   const onPostBoardData = async (): Promise<void> => {
     const boardData = await getBoardData(boardId!, monday);
-    console.log("file: App.tsx:59 -> onPostBoardData -> boardData:", boardData)
     await postData(boardData, boardId, conversationType);
     setBoardData(boardData)
   };
@@ -65,12 +63,16 @@ function App() {
     const activityLogsData = await getActivityLogs(boardId, monday);
     await postData(activityLogsData, boardId, conversationType);
   };
+  const onPostBoardUpdates = async () => {
+    const updatesData = await getUpdates(boardId, monday);
+    console.log("file: App.tsx:67 -> onPostBoardUpdates -> updatesData:", updatesData)
+    await postData(updatesData, boardId, conversationType);
+  };
 
   const onChat = async (
     searchText: string,
     chatHistory: ChatHistory[]
   ): Promise<string> => {
-    console.log("file: App.tsx:73 -> App -> searchText:", searchText)
     const answer = await postPrompt(
       searchText,
       boardId,
@@ -90,7 +92,7 @@ function App() {
     setConversationType(type);
   };
 
-  if (!boardData || !userName) return <BoardLoaderPlaceholder />;
+  if (!boardData || !userData) return <BoardLoaderPlaceholder />;
   return (
     <main>
       {/* <Button onClick={() => onGenerateInsights(boardData)}>Generate</Button>
@@ -98,7 +100,7 @@ function App() {
       <RootWrapper
         onChat={onChat}
         onChooseOption={onChooseOption}
-        userName={userName}
+        userData={userData}
         conversationType={conversationType}
       />
     </main>

@@ -1,14 +1,17 @@
 import axios from "axios";
 
+const domain = import.meta.env.MODE === 'production' ? 'https://board-assistant-production.up.railway.app' : 'http://localhost:3030'
+
 export async function postData(
   data: any,
   boardId: number | null,
   conversationType: string
 ) {
+  const namespace = boardId + getSuffix(conversationType)
   try {
-    await axios.post(`http://localhost:3030/ai/upload/${conversationType}`, {
+    await axios.post(`${domain}/ai/upload/${conversationType}`, {
       data,
-      namespace: boardId + getSuffix(conversationType),
+      namespace,
     });
   } catch (err) {
     console.log("file: openaiService.ts:7 -> getInsightsData -> err:", err);
@@ -16,18 +19,20 @@ export async function postData(
 }
 
 function getSuffix(conversationType: string) {
-  console.log(
-    "file: openaiService.ts:21 -> getSuffix -> conversationType:",
-    conversationType
-  );
   const ACTIVITY_LOG_SUFFIX = "_activity_log";
+  const ACTIVITY_UPDATES = "_updates";
   const BOARD_LOG_SUFFIX = "";
+  const AGENT_LOG_SUFFIX = "";
 
   switch (conversationType) {
     case "board":
       return BOARD_LOG_SUFFIX;
     case "activity":
       return ACTIVITY_LOG_SUFFIX;
+    case "updates":
+      return ACTIVITY_UPDATES;
+    case "agent":
+      return AGENT_LOG_SUFFIX;
     default:
       return "";
   }
@@ -39,19 +44,16 @@ export async function postPrompt(
   chatHistory: ChatHistory[],
   conversationType: string
 ) {
-  console.log("file: openaiService.ts:46 -> textField:", textField)
   try {
     const sessionData = {
       namespace: boardId + getSuffix(conversationType),
       chatHistory,
     };
-    console.log("file: openaiService.ts:47 -> sessionData:", sessionData);
 
     const res = await axios.post(
-      `http://localhost:3030/ai/prompt/${conversationType}`,
+      `${domain}/ai/prompt/${conversationType}`,
       { prompt: textField, sessionData }
     );
-    console.log("file: openaiService.ts:21 -> postPrompt -> res:", res.data);
     return res.data;
   } catch (err) {
     console.log("file: openaiService.ts:21 -> postPrompt -> err:", err);

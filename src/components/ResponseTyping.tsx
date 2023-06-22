@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+// @ts-ignore
 import Box from "monday-ui-react-core/dist/Box";
 
 export default function ResponseTyping() {

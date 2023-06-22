@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
-import TextField from "monday-ui-react-core/dist/TextField";
-import Button from "monday-ui-react-core/dist/Button";
-import SplitButton from "monday-ui-react-core/dist/SplitButton";
-import Menu from "monday-ui-react-core/dist/Menu";
-import MenuItem from "monday-ui-react-core/dist/MenuItem";
+import { useState } from "react";
+
 // import Loader from "monday-ui-react-core/dist/Loader";
 // import StoryDescription from "monday-ui-react-core/dist/StoryDescription";
 import QuestionBubble from "./QuestionBubble";
@@ -12,18 +8,34 @@ import ResponseBubble from "./ResponseBubble";
 // import BoardLoaderPlaceholder from "./BoardLoaderPlaceholder";
 import { v4 as uuid } from "uuid";
 import ResponseTyping from "./ResponseTyping";
+// @ts-ignore
 import Activity from "monday-ui-react-core/dist/icons/Activity";
+// @ts-ignore
 import Board from "monday-ui-react-core/dist/icons/Board";
+// @ts-ignore
+import TextField from "monday-ui-react-core/dist/TextField";
+// @ts-ignore
+import Button from "monday-ui-react-core/dist/Button";
+// @ts-ignore
+import SplitButton from "monday-ui-react-core/dist/SplitButton";
+// @ts-ignore
+import Menu from "monday-ui-react-core/dist/Menu";
+// @ts-ignore
+import MenuItem from "monday-ui-react-core/dist/MenuItem";
+// @ts-ignore
+import Update from "monday-ui-react-core/dist/icons/Update";
+// @ts-ignore
+import Robot from "monday-ui-react-core/dist/icons/Robot";
 // import { Menu, MenuItem, SplitButton } from "monday-ui-react-core";
 export default function RootWrapper({
   onChat,
   onChooseOption,
-  userName,
+  userData,
   conversationType,
 }: {
   onChat: (arg0: string, arg1: ChatHistory[]) => Promise<string>;
   onChooseOption: Function;
-  userName: string | null;
+  userData: any;
   conversationType: string;
 }) {
   const [searchText, setSearchText] = useState("");
@@ -32,54 +44,182 @@ export default function RootWrapper({
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
 
   const handlePromptSend = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("here :D");
     e.preventDefault();
     const oldSearchText = searchText;
-    setChatHistory((prev) => [...prev, { Human: oldSearchText }]);
+    setChatHistory((prev) => {
+      const newHistory = [...prev, { Human: oldSearchText }];
+      onSetChat(oldSearchText, newHistory);
+      setSearchText("");
+      return newHistory;
+    });
   };
 
-  useEffect(() => {
-    chatHistory.length &&
-      Object.keys(chatHistory[chatHistory.length - 1])[0] === "Human" &&
-      onSetChat(searchText);
-        setSearchText("");
+  const handleSuggestionPrompt = (
+    searchText: string,
+    preparedPrompt: string
+  ) => {
+    const oldSearchText = searchText;
+    setChatHistory((prev) => {
+      const newHistory = [...prev, { Human: oldSearchText }];
+      onSetChat(preparedPrompt, newHistory);
+      setSearchText("");
+      return newHistory;
+    });
+  };
 
-  }, [chatHistory]);
-
-  const onSetChat = async (searchText: string) => {
-    console.log("file: RootWrapper.tsx:48 -> onSetChat -> searchText:", searchText)
+  const onSetChat = async (searchText: string, newHistory: ChatHistory[]) => {
+    if (isLoadingAIAnswer) return;
     setIsLoadingAIAnswer(true);
-    const answer: string = await onChat(searchText, chatHistory);
+    const answer: string = await onChat(searchText, newHistory);
 
     setChatHistory((prev) => [...prev, { AI: answer }]);
     setIsLoadingAIAnswer(false);
   };
 
+  const getBoardUseCase = (conversationType: string) => {
+    switch (conversationType) {
+      case "activity":
+        return "activities";
+      case "board":
+        return "data";
+      case "agent":
+        return "data";
+      case "updates":
+        return "updates";
+
+      default:
+        break;
+    }
+  };
+
   const AssistantOptionsMenu = () => {
-    return (
-      <Menu size="small">
-        <MenuItem
-          onClick={() => onChooseOption('activity',setSearchText, setChatHistory)}
-          iconType="SVG"
-        //   iconBackgroundColor="var(--color-indigo)"
-          icon={Activity}
-          title="Activity Logs"
-        />
-        <MenuItem
-          onClick={() => onChooseOption('board',setSearchText, setChatHistory)}
-          iconType="SVG"
-        //   iconBackgroundColor="var(--color-stuck-red)"
-          icon={Board}
-          title="Board Information"
-        />
-        {/* <MenuItem
-      onClick={() => getHTMLFromBodyMessage(asyncResult => forwardEmail(asyncResult, type))}
-      icon={Send}
-      title="Forward mail as update"
-      tooltipContent="Automatically send the body of the current message to an update"
-      tooltipPosition="bottom"
-    /> */}
-      </Menu>
-    );
+    let menuItemsToDisplay = null;
+
+    switch (conversationType) {
+      case "activity":
+        menuItemsToDisplay = (
+          <Menu size="small">
+            <MenuItem
+              onClick={() =>
+                onChooseOption("board", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Board}
+              title="Board Information"
+            />
+            <MenuItem
+              onClick={() =>
+                onChooseOption("updates", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Update}
+             title="Board Updates"
+            />
+                        <MenuItem
+              onClick={() =>
+                onChooseOption("agent", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Robot}
+              title="Agent (experimental)"
+            />
+          </Menu>
+        );
+        break;
+      case "board":
+        menuItemsToDisplay = (
+          <Menu size="small">
+            <MenuItem
+              onClick={() =>
+                onChooseOption("activity", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Activity}
+              title="Board Activities"
+            />
+            <MenuItem
+              onClick={() =>
+                onChooseOption("updates", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Update}
+              title="Board Updates"
+            />
+            <MenuItem
+              onClick={() =>
+                onChooseOption("agent", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Robot}
+              title="Agent (experimental)"
+            />
+          </Menu>
+        );
+        break;
+      case "updates":
+        menuItemsToDisplay = (
+          <Menu size="small">
+            <MenuItem
+              onClick={() =>
+                onChooseOption("board", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Board}
+              title="Board Information"
+            />
+            <MenuItem
+              onClick={() =>
+                onChooseOption("activity", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Activity}
+              title="Board Activities"
+            />
+                        <MenuItem
+              onClick={() =>
+                onChooseOption("agent", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Robot}
+              title="Agent (experimental)"
+            />
+          </Menu>
+        );
+        break;
+      case "agent":
+        menuItemsToDisplay = (
+          <Menu size="small">
+            <MenuItem
+              onClick={() =>
+                onChooseOption("board", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Board}
+              title="Board Information"
+            />
+            <MenuItem
+              onClick={() =>
+                onChooseOption("activity", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Activity}
+              title="Board Activities"
+            />
+            <MenuItem
+              onClick={() =>
+                onChooseOption("updates", setSearchText, setChatHistory)
+              }
+              iconType="SVG"
+              icon={Update}
+              title="Board Updates"
+            />
+          </Menu>
+        );
+        break;
+    }
+
+    return menuItemsToDisplay;
   };
 
   return (
@@ -87,7 +227,11 @@ export default function RootWrapper({
       <section className="overflow-y-scroll chat-section">
         <div className="flex justify-start" key={uuid()}>
           <ResponseBubble
-            text={`Hi ${userName} 👋, I am your Board Assistant. Feel free to ask me anything related to the board. `}
+            text={`Hi ${
+              userData.userName
+            } 👋, I am your Board Assistant. Feel free to ask me anything related to the board ${getBoardUseCase(
+              conversationType
+            )}. `}
             key={uuid()}
           />
         </div>
@@ -95,7 +239,11 @@ export default function RootWrapper({
           if (msg.Human) {
             return (
               <div className="flex justify-end" key={uuid()}>
-                <QuestionBubble text={msg.Human as string} key={uuid()} />
+                <QuestionBubble
+                  userData={userData}
+                  text={msg.Human as string}
+                  key={uuid()}
+                />
               </div>
             );
           } else {
@@ -107,13 +255,31 @@ export default function RootWrapper({
           }
         })}
         {isLoadingAIAnswer && <ResponseTyping />}
-        {!chatHistory.length && (
+        {!chatHistory.length && conversationType === "board" && (
           <div className="pre-actions">
-            <Button size={Button.sizes.SMALL} kind={Button.kinds.SECONDARY}>
-              Show board analytics
+            <Button
+              size={Button.sizes.SMALL}
+              onClick={() =>
+                handleSuggestionPrompt(
+                  "What are the best insights I can get from the board?",
+                  "Looking at the 'title' column, are there similar tasks that can be grouped together for efficiency? What are they? What are the best insights I can get from the board?"
+                )
+              }
+              kind={Button.kinds.SECONDARY}
+            >
+              Get Insights
             </Button>
-            <Button size={Button.sizes.SMALL} kind={Button.kinds.SECONDARY}>
-              Give Insights
+            <Button
+              onClick={() =>
+                handleSuggestionPrompt(
+                  "What are some potential bottlenecks in our current workflow?",
+                  "What are some potential bottlenecks in our current workflow?"
+                )
+              }
+              size={Button.sizes.SMALL}
+              kind={Button.kinds.SECONDARY}
+            >
+              Identify Bottlenecks
             </Button>
           </div>
         )}
@@ -124,7 +290,7 @@ export default function RootWrapper({
         <form className="flex m-3 space-x-4" onSubmit={handlePromptSend}>
           <TextField
             className="w-3/4"
-            placeholder={`Ask for assistance about ${conversationType}..`}
+            placeholder={`Ask for assistance about the board ${getBoardUseCase(conversationType)}..`}
             size={TextField.sizes.MEDIUM}
             onChange={(e: string) => setSearchText(e)}
             value={searchText}

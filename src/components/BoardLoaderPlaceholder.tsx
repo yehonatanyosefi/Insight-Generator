@@ -1,4 +1,6 @@
 import  { useEffect, useState } from "react";
+
+// @ts-ignore
 import Loader from "monday-ui-react-core/dist/Loader";
 
 export default function BoardLoaderPlaceholder() {

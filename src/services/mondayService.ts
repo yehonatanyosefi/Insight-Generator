@@ -23,7 +23,6 @@ export const getBoardData = async (boardId: number, mondaySdk: any) => {
         }`;
 
     const res = await mondaySdk.api(query);
-    console.log("file: mondayService.ts:30 -> getBoardData -> res:", res);
 
     const mappedBoardData = res.data.boards.map((board: any) => {
       return {
@@ -60,7 +59,6 @@ export const getBoardData = async (boardId: number, mondaySdk: any) => {
       };
     });
 
-    console.log("file: mondayService.ts:11 -> getBoardData -> res:", res);
     return mappedBoardData[0];
   } catch (err) {
     console.log("file: mondayService.ts:5 -> getBoardData -> err:", err);
@@ -68,20 +66,21 @@ export const getBoardData = async (boardId: number, mondaySdk: any) => {
 };
 
 
-export async function getUserName(mondaySdk: any) {
+export async function getUserData(mondaySdk: any) {
   try {
       const query = `query {
 
       me {
         name
+        photo_small
+
       }
     }
 
       `
       const res = await mondaySdk.api(query);
-      console.log("file: mondayService.ts:79 -> getUserName -> res:", res)
 
-      return res.data.me.name.split(' ')[0]
+      return {userName: res.data.me.name.split(' ')[0], avatar: res.data.me.photo_small}
   } catch(err) {
     console.log("file: mondayService.ts:75 -> getUserName -> err:", err)
     
@@ -89,15 +88,59 @@ export async function getUserName(mondaySdk: any) {
 }
 
 
+export async function getUpdates(boardId: number | null, mondaySdk: any) {
+  try {
+    const query = `query {
+      boards(ids: ${boardId}) {
+        items(limit: 500) {
+          id
+          name
+        }
+        updates(limit: 500){
+          text_body
+          item_id
+    
+        }
+      }
+    }`
+    const res = await mondaySdk.api(query);
+
+    const updates = res.data.boards[0].updates.map((update: any) => {
+      const item = res.data.boards[0].items.find((item: any) => item.id === update.item_id);
+      return {
+        item_name_of_the_update: item ? item.name : null,
+        update_content: update.text_body,
+      };
+    });
+    console.log("file: mondayService.ts:114 -> updates -> updates:", updates)
+
+    const mappedData = {
+      board_id: boardId,
+      updates
+    }
+
+    return mappedData
+  } catch(err) {
+    console.log("file: mondayService.ts:75 -> getUserName -> err:", err)
+  }
+}
+
 export async function getActivityLogs(boardId: number | null, mondaySdk: any) {
   try {
     const query = `query {
       boards(ids: ${boardId}) {
-        activity_logs(limit: 1000) {
+        name
+        id
+        groups {
+          title
+          id
+        }
+        activity_logs(limit: 100) {
           entity
           user_id
           event
           created_at
+          data
         }
       }
     }` 
@@ -108,35 +151,30 @@ export async function getActivityLogs(boardId: number | null, mondaySdk: any) {
     const mappedActivityLogs = await Promise.all(res.data.boards[0].activity_logs.map(async(activity: any) => {
       const username = await getUserNameById(activity.user_id, mondaySdk)
       const date = convertUnixTimeToDate(activity.created_at)
-      console.log('ca',activity.created_at)
 
 
       return {
         activity_done_at: date,
         activity_occured_on: activity.entity,
         by_user: username,
-        event: activity.event
+        event: activity.event,
+        data: activity.data
       }
     }))
-    console.log("file: mondayService.ts:120 -> mappedActivityLogs -> mappedActivityLogs:", mappedActivityLogs)
-    return mappedActivityLogs
+
+    const mappedData = {
+      board_name: res.data.boards[0].name,
+      board_id:  res.data.boards[0].id,
+      board_groups: res.data.boards[0].groups,
+      activites: mappedActivityLogs
+    }
+    return mappedData
   } catch(err) {
     console.log("file: mondayService.ts:96 -> getActivityLogs -> err:", err)
     
   }
 }
 
-function convert17digitUnixToDate(digits: number) {
-  const unixTimeSeconds = Math.floor(digits / 1000000000);
-  console.log("file: mondayService.ts:129 -> convert17digitUnixToDate -> unixTimeSeconds:", unixTimeSeconds)
-  
-  // Convert Unix time to a Date object
-  const date = new Date(unixTimeSeconds * 1000);
-  
-  // Format the date as desired
-  const formattedDate = date.toISOString(); 
-  return formattedDate
-}
 
 function convertUnixTimeToDate(unixTime: string) {
   const milliseconds = parseInt(unixTime.substring(0, 13));
@@ -155,7 +193,6 @@ export async function getUserNameById(userId: number, mondaySdk: any) {
 
       `
       const res = await mondaySdk.api(query);
-      console.log("file: mondayService.ts:79 -> getUserName -> res:", res)
 
       return res.data.users[0]?.name || 'unkown'
   } catch(err) {
