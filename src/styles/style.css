@@ -19,6 +19,25 @@
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
     }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      background-color: rgba(0, 0, 0, 0);
+      -webkit-border-radius: 100px;
+    }
+    
+    ::-webkit-scrollbar:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+    }
+    
+    ::-webkit-scrollbar-thumb:vertical {
+      background: rgba(0, 0, 0, 0.2);
+      -webkit-border-radius: 100px;
+    }
+    
+    ::-webkit-scrollbar-thumb:vertical:active {
+      -webkit-border-radius: 100px;
+    }
   }
 }
 
